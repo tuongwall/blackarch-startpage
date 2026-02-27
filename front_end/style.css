@@ -1,57 +1,28 @@
-/* ============================================================
-   BLACKARCH OPERATIONAL CONSOLE
-   Stylesheet Architecture – Enterprise Documentation Version
-   Purpose:
-   - Define visual system
-   - Maintain consistent theme tokens
-   - Provide scalable layout & animation framework
-   ============================================================ */
+/* =========================================
+   1. GLOBAL VARIABLES & RESET
+   ========================================= */
 
-
-/* ============================================================
-   1. DESIGN TOKENS (GLOBAL THEME VARIABLES)
-   ------------------------------------------------------------
-   Centralized configuration for:
-   - Color palette
-   - Glow effects
-   - Transparency layers
-   - Border system
-   Any rebranding or theming should begin here.
-   ============================================================ */
-
+/* Define CSS Variables for the global color theme */
 :root {
-
-    /* Primary Accent Color (Neon Green Identity) */
     --green: #00ff41;
-
-    /* Secondary Accent (Darker Shade for Depth Hierarchy) */
+    /* Primary neon green */
     --green-dim: #00c832;
-
-    /* Glow & Shadow Utilities */
+    /* Darker green for accents */
     --green-glow: rgba(0, 255, 65, 0.4);
+    /* Glow effect color */
     --green-faint: rgba(0, 255, 65, 0.08);
-
-    /* Core Background System */
+    /* Faint background for hover states */
     --bg: #000000;
-
-    /* Glass Panel Background Layer */
+    /* Pure black background */
     --panel: rgba(2, 10, 2, 0.82);
-
-    /* Standard Border Color */
+    /* Semi-transparent dark green/black for the panel */
     --border: rgba(0, 255, 65, 0.25);
-
-    /* Secondary / Informational Text */
+    /* Default border color */
     --text-dim: #5a8a5a;
+    /* Dimmed text color for secondary info */
 }
 
-
-/* ============================================================
-   2. GLOBAL RESET & BOX MODEL NORMALIZATION
-   ------------------------------------------------------------
-   Ensures predictable sizing and layout behavior
-   across browsers and rendering engines.
-   ============================================================ */
-
+/* Universal reset to ensure consistent sizing across browsers */
 *,
 *::before,
 *::after {
@@ -60,98 +31,70 @@
     padding: 0;
 }
 
+/* =========================================
+   2. MAIN LAYOUT & BACKGROUND EFFECTS
+   ========================================= */
 
-/* ============================================================
-   3. ROOT LAYOUT CONFIGURATION
-   ------------------------------------------------------------
-   Establish:
-   - Centered viewport layout
-   - Full-screen rendering
-   - Scroll lock (intentional)
-   ============================================================ */
-
+/* Body styling: Centered layout, hidden scrollbars, and tech font */
 body {
     background: var(--bg);
     color: var(--green);
     font-family: 'Share Tech Mono', monospace;
-
-    /* Prevent scroll injection or layout shift */
     overflow: hidden;
-
-    /* Flexbox centering strategy */
+    /* Prevent scrolling */
     display: flex;
     justify-content: center;
+    /* Center horizontally */
     align-items: center;
-
+    /* Center vertically */
     height: 100vh;
     width: 100vw;
 }
 
-
-/* ============================================================
-   4. BACKGROUND RENDERING LAYERS
-   ------------------------------------------------------------
-   Layer Order:
-   0 – Matrix Canvas
-   1 – CRT Scanline Overlay
-   2 – Main Panel
-   ============================================================ */
-
-/* Matrix Animation Canvas */
+/* Matrix rain canvas placed behind everything */
 #matrix {
     position: fixed;
     inset: 0;
     z-index: 0;
     opacity: 0.55;
+    /* Dimmed so it doesn't overpower the foreground */
 }
 
-/* CRT Scanline Overlay (Non-interactive visual effect) */
+/* Retro CRT scanline overlay effect using repeating gradients */
 body::after {
     content: '';
     position: fixed;
     inset: 0;
     z-index: 1;
+    /* Above matrix, below panel */
     pointer-events: none;
-
-    background: repeating-linear-gradient(to bottom,
-            transparent 0px,
-            transparent 3px,
-            rgba(0, 0, 0, 0.08) 3px,
-            rgba(0, 0, 0, 0.08) 4px);
+    /* Ignore mouse interactions */
+    background: repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(0, 0, 0, 0.08) 3px, rgba(0, 0, 0, 0.08) 4px);
 }
 
+/* =========================================
+   3. MAIN CENTER PANEL (GLASSMORPHISM)
+   ========================================= */
 
-/* ============================================================
-   5. PRIMARY PANEL (GLASSMORPHISM CONTAINER)
-   ------------------------------------------------------------
-   - Centralized application container
-   - Glass blur effect
-   - Entry animation
-   ============================================================ */
-
+/* The central container holding all the content */
 .panel {
     position: relative;
     z-index: 2;
-
+    /* Highest z-index to stay on top */
     width: min(640px, 95vw);
-
+    /* Responsive width: 640px max, 95% on mobile */
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 12px;
-
     padding: 38px 48px 36px;
-
     backdrop-filter: blur(8px);
-
-    box-shadow:
-        0 0 0 1px rgba(0, 255, 65, 0.05),
-        0 0 40px rgba(0, 255, 65, 0.08),
-        0 0 80px rgba(0, 0, 0, 0.8);
-
+    /* Glassmorphism blur effect */
+    box-shadow: 0 0 0 1px rgba(0, 255, 65, 0.05), 0 0 40px rgba(0, 255, 65, 0.08), 0 0 80px rgba(0, 0, 0, 0.8);
     animation: fadeIn 0.8s ease both;
+    /* Trigger slide-up animation on load */
 }
 
-/* Entry Transition */
+/* Slide-up and fade-in animation keyframes */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -164,10 +107,9 @@ body::after {
     }
 }
 
-
-/* ============================================================
-   6. BRANDING MODULE (LOGO + TITLE SYSTEM)
-   ============================================================ */
+/* =========================================
+   4. LOGO & TYPOGRAPHY
+   ========================================= */
 
 .logo-wrap {
     display: flex;
@@ -176,35 +118,29 @@ body::after {
     margin-bottom: 22px;
 }
 
-/* Logo Glow Container */
+/* Wrapper for the logo to apply the glowing shadow */
 .logo-svg-wrap {
     width: 96px;
     height: 96px;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     margin-bottom: 14px;
-
-    filter:
-        drop-shadow(0 0 12px var(--green)) drop-shadow(0 0 28px rgba(0, 255, 65, 0.3));
-
+    filter: drop-shadow(0 0 12px var(--green)) drop-shadow(0 0 28px rgba(0, 255, 65, 0.3));
     animation: pulse 3s ease-in-out infinite;
+    /* Continuous glowing animation */
 }
 
-/* Continuous Glow Animation */
+/* Heartbeat/breathing glow animation */
 @keyframes pulse {
 
     0%,
     100% {
-        filter:
-            drop-shadow(0 0 10px var(--green)) drop-shadow(0 0 24px rgba(0, 255, 65, 0.25));
+        filter: drop-shadow(0 0 10px var(--green)) drop-shadow(0 0 24px rgba(0, 255, 65, 0.25));
     }
 
     50% {
-        filter:
-            drop-shadow(0 0 18px var(--green)) drop-shadow(0 0 40px rgba(0, 255, 65, 0.5));
+        filter: drop-shadow(0 0 18px var(--green)) drop-shadow(0 0 40px rgba(0, 255, 65, 0.5));
     }
 }
 
@@ -212,22 +148,20 @@ body::after {
     width: 96px;
     height: 96px;
     object-fit: contain;
+    /* Maintain aspect ratio */
 }
 
-/* Title Typography */
+/* Main animated title styling */
 .logo-title {
     font-family: 'Orbitron', monospace;
     font-size: 30px;
     font-weight: 900;
     letter-spacing: 8px;
     text-transform: uppercase;
-
-    text-shadow:
-        0 0 12px var(--green),
-        0 0 30px rgba(0, 255, 65, 0.4);
-
+    text-shadow: 0 0 12px var(--green), 0 0 30px rgba(0, 255, 65, 0.4);
     line-height: 1;
     min-height: 38px;
+    /* Fixed height to prevent layout shift during typewriter effect */
 }
 
 .logo-sub {
@@ -238,23 +172,22 @@ body::after {
     text-transform: uppercase;
 }
 
+/* =========================================
+   5. DECORATIONS & CLOCK
+   ========================================= */
 
-/* ============================================================
-   7. INTERFACE DECORATION & CLOCK MODULE
-   ============================================================ */
-
+/* Horizontal divider with 'TERMINAL' text */
 .divider {
     display: flex;
     align-items: center;
     gap: 10px;
-
     margin-bottom: 20px;
-
     color: var(--text-dim);
     font-size: 10px;
     letter-spacing: 3px;
 }
 
+/* Fading lines on the left and right of the divider text */
 .divider::before,
 .divider::after {
     content: '';
@@ -263,6 +196,7 @@ body::after {
     background: linear-gradient(to right, transparent, var(--border), transparent);
 }
 
+/* Real-time digital clock */
 #clock {
     text-align: center;
     font-size: 12px;
@@ -271,17 +205,18 @@ body::after {
     letter-spacing: 2px;
 }
 
+/* Distinct color for the time portion of the clock */
 #clock span {
     color: var(--green-dim);
 }
 
-
-/* ============================================================
-   8. SEARCH MODULE (INTERACTION LAYER)
-   ============================================================ */
+/* =========================================
+   6. SEARCH BAR & SUGGESTIONS
+   ========================================= */
 
 .search-wrap {
     position: relative;
+    /* Anchor point for absolute positioned suggestions */
     margin-bottom: 28px;
 }
 
@@ -289,23 +224,27 @@ body::after {
     display: flex;
     border: 1px solid var(--border);
     border-radius: 8px;
+    overflow: visible;
     transition: border-color 0.3s, box-shadow 0.3s;
 }
 
+/* Highlight border and add glow when the input is focused */
 .search-form:focus-within {
     border-color: var(--green);
-    box-shadow:
-        0 0 0 2px rgba(0, 255, 65, 0.15),
-        0 0 20px rgba(0, 255, 65, 0.1);
+    box-shadow: 0 0 0 2px rgba(0, 255, 65, 0.15), 0 0 20px rgba(0, 255, 65, 0.1);
 }
 
+/* Fake terminal prefix (root@arch ~#) */
 .search-prefix {
     display: flex;
     align-items: center;
     padding: 0 12px;
     background: rgba(0, 255, 65, 0.06);
+    color: var(--green);
+    font-size: 14px;
     border-right: 1px solid var(--border);
     user-select: none;
+    /* Prevent text selection */
     flex-shrink: 0;
 }
 
@@ -315,12 +254,15 @@ body::after {
     background: transparent;
     border: none;
     outline: none;
-
     color: #e0ffe0;
     font-family: 'Share Tech Mono', monospace;
     font-size: 14px;
-
     caret-color: var(--green);
+    /* Green blinking text cursor */
+}
+
+.search-form input::placeholder {
+    color: #2a4a2a;
 }
 
 .search-form button {
@@ -328,15 +270,72 @@ body::after {
     background: transparent;
     border: none;
     border-left: 1px solid var(--border);
+    color: var(--green);
     cursor: pointer;
     font-size: 25px;
+    transition: background 0.2s;
 }
 
+.search-form button:hover {
+    background: var(--green-faint);
+}
 
-/* ============================================================
-   9. QUICK ACCESS GRID SYSTEM
-   ============================================================ */
+/* Auto-complete suggestions dropdown box */
+#suggestions {
+    display: none;
+    /* Hidden by default, toggled via JS */
+    position: absolute;
+    top: calc(100% + 4px);
+    /* Positioned just below the search bar */
+    left: 0;
+    right: 0;
+    background: rgba(0, 8, 0, 0.97);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    z-index: 10;
+    overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0, 255, 65, 0.1);
+}
 
+/* Individual suggestion item */
+.sug-item {
+    padding: 9px 16px;
+    font-size: 13px;
+    color: #7ab87a;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s, color 0.15s, padding-left 0.15s;
+}
+
+/* Add a '>' symbol before each suggestion */
+.sug-item::before {
+    content: '>';
+    color: var(--text-dim);
+    flex-shrink: 0;
+}
+
+/* Hover effect: indent slightly and change color */
+.sug-item:hover {
+    background: var(--green-faint);
+    color: var(--green);
+    padding-left: 22px;
+}
+
+/* =========================================
+   7. QUICK LINKS & FOOTER
+   ========================================= */
+
+.links-label {
+    font-size: 10px;
+    color: var(--text-dim);
+    letter-spacing: 4px;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+/* 2-column grid layout for links */
 .links {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -348,35 +347,41 @@ body::after {
     align-items: center;
     gap: 9px;
     padding: 10px 14px;
-
     border: 1px solid var(--border);
     border-radius: 7px;
-
+    color: #8acc8a;
     text-decoration: none;
     font-size: 13px;
-
     transition: all 0.25s;
+    background: rgba(0, 255, 65, 0.02);
 }
 
+.links a .icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+/* Link hover effect: subtle lift and glow */
 .links a:hover {
     background: var(--green-faint);
     border-color: var(--green);
+    color: var(--green);
+    box-shadow: 0 0 10px rgba(0, 255, 65, 0.12);
     transform: translateY(-2px);
 }
 
-
-/* ============================================================
-   10. CURSOR & FOOTER
-   ============================================================ */
-
+/* Blinking terminal cursor for the typewriter effect */
 .cursor {
     display: inline-block;
     width: 2px;
     height: 1em;
     background: var(--green);
+    vertical-align: middle;
+    margin-left: 2px;
     animation: blink 1s step-end infinite;
 }
 
+/* Hard toggle visibility for realistic blinking */
 @keyframes blink {
     50% {
         opacity: 0;
@@ -387,42 +392,71 @@ body::after {
     margin-top: 20px;
     text-align: center;
     font-size: 10px;
-    letter-spacing: 2px;
     color: #1e3a1e;
+    letter-spacing: 2px;
 }
 
-
-/* ============================================================
-   11. RESPONSIVE STRATEGY (MOBILE OPTIMIZATION)
-   ------------------------------------------------------------
-   Breakpoint: 600px
-   Goal:
-   - Reduce typography scale
-   - Convert grid to single column
-   - Optimize spacing density
-   ============================================================ */
-
+/* =========================================
+   RESPONSIVE CHO ĐIỆN THOẠI (MOBILE)
+   ========================================= */
 @media screen and (max-width: 600px) {
-
     .panel {
         width: 92vw;
         padding: 24px 20px 24px;
+        /* Giảm padding để tiết kiệm không gian */
     }
 
     .logo-svg-wrap,
     .logo-img {
         width: 70px;
+        /* Thu nhỏ logo */
         height: 70px;
+        margin-bottom: 8px;
     }
 
     .logo-title {
         font-size: 20px;
+        /* Thu nhỏ chữ để không bị rớt dòng */
         letter-spacing: 4px;
         min-height: 24px;
     }
 
-    .links {
-        grid-template-columns: 1fr;
+    .logo-sub {
+        font-size: 9px;
+        letter-spacing: 2px;
+        text-align: center;
+        line-height: 1.4;
     }
 
+    .search-prefix {
+        font-size: 11px;
+        /* Chữ root@arch nhỏ lại */
+        padding: 0 8px;
+    }
+
+    .search-form input {
+        font-size: 13px;
+        padding: 10px 8px;
+    }
+
+    .search-form button {
+        padding: 0 12px;
+    }
+
+    /* Chuyển các nút bấm thành 1 cột thay vì 2 cột nếu màn hình quá nhỏ */
+    .links {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .links a {
+        padding: 12px;
+        justify-content: center;
+        /* Căn giữa chữ và icon trên điện thoại */
+    }
+
+    #clock {
+        font-size: 11px;
+        margin-bottom: 16px;
+    }
 }

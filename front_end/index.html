@@ -1,122 +1,68 @@
 <!doctype html>
 <html lang="en">
 
-<head>
-    <!-- Character encoding declaration -->
+<head> <!-- Character encoding declaration -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-
     <!-- Page title displayed in browser tab -->
-    <title>BlackArch Startpage</title>
-
-    <!-- Google Fonts: Share Tech Mono for body text, Orbitron for headings -->
+    <title>BlackArch Startpage</title> <!-- Google Fonts: Share Tech Mono for body text, Orbitron for headings -->
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap"
-        rel="stylesheet">
-
-    <!-- Main stylesheet -->
+        rel="stylesheet"> <!-- Main stylesheet -->
     <link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-
-    <!-- Fullscreen canvas used for the Matrix rain animation (rendered via script.js) -->
-    <canvas id="matrix"></canvas>
-
-    <!-- Main centered panel containing all UI elements -->
-    <div class="panel">
-
-        <!-- ── LOGO SECTION ─────────────────────────────────────────── -->
-        <div class="logo-wrap">
-
-            <!-- Logo image with SVG fallback if image fails to load -->
-            <div class="logo-svg-wrap">
-
-                <!-- Primary logo fetched from the official BlackArch GitHub repo -->
-                <img class="logo-img"
+<body> <!-- Fullscreen canvas used for the Matrix rain animation (rendered via script.js) --> <canvas
+        id="matrix"></canvas> <!-- Main centered panel containing all UI elements -->
+    <div class="panel"> <!-- ── LOGO SECTION ─────────────────────────────────────────── -->
+        <div class="logo-wrap"> <!-- Logo image with SVG fallback if image fails to load -->
+            <div class="logo-svg-wrap"> <!-- Primary logo fetched from the official BlackArch GitHub repo --> <img
+                    class="logo-img"
                     src="https://raw.githubusercontent.com/BlackArch/blackarch-site/master/images/logo.png"
                     alt="BlackArch"
                     onerror="this.style.display='none'; document.getElementById('fallback-logo').style.display='block';">
-
-                <!-- Fallback SVG shield logo — shown only when the image above fails -->
-                <svg id="fallback-logo" style="display:none;" width="96" height="96" viewBox="0 0 96 96" fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
-                    <!-- Outer shield border -->
+                <!-- Fallback SVG shield logo — shown only when the image above fails --> <svg id="fallback-logo"
+                    style="display:none;" width="96" height="96" viewBox="0 0 96 96" fill="none"
+                    xmlns="http://www.w3.org/2000/svg"> <!-- Outer shield border -->
                     <path d="M48 4 L84 18 L84 52 Q84 76 48 92 Q12 76 12 52 L12 18 Z" fill="none" stroke="#00ff41"
-                        stroke-width="2.5" stroke-linejoin="round" />
-                    <!-- Inner shield fill -->
+                        stroke-width="2.5" stroke-linejoin="round" /> <!-- Inner shield fill -->
                     <path d="M48 12 L76 23 L76 50 Q76 70 48 82 Q20 70 20 50 L20 23 Z" fill="rgba(0,255,65,0.06)"
                         stroke="#00c832" stroke-width="1" stroke-linejoin="round" />
-                    <!-- Placeholder question mark when logo cannot be determined -->
-                    <text x="48" y="65" font-family="'Orbitron', monospace" font-size="46" font-weight="900"
-                        fill="#00ff41" text-anchor="middle" style="text-shadow: 0 0 10px rgba(0,255,65,0.8);">?</text>
+                    <!-- Placeholder question mark when logo cannot be determined --> <text x="48" y="65"
+                        font-family="'Orbitron', monospace" font-size="46" font-weight="900" fill="#00ff41"
+                        text-anchor="middle" style="text-shadow: 0 0 10px rgba(0,255,65,0.8);">?</text>
                     <!-- Corner accent dots on the shield -->
                     <circle cx="12" cy="18" r="2.5" fill="#00ff41" />
                     <circle cx="84" cy="18" r="2.5" fill="#00ff41" />
                     <circle cx="48" cy="4" r="2.5" fill="#00ff41" />
                     <circle cx="48" cy="92" r="2.5" fill="#00ff41" />
-                </svg>
-            </div>
-
-            <!-- Animated typewriter title — text is injected by script.js -->
-            <div class="logo-title">
-                <span id="type-text"></span>
-                <!-- Blinking cursor rendered via CSS animation -->
-                <span class="cursor"></span>
-            </div>
-
-            <!-- Static subtitle beneath the main title -->
+                </svg> </div> <!-- Animated typewriter title — text is injected by script.js -->
+            <div class="logo-title"> <span id="type-text"></span> <!-- Blinking cursor rendered via CSS animation -->
+                <span class="cursor"></span> </div> <!-- Static subtitle beneath the main title -->
             <div class="logo-sub">Linux · Penetration Testing Distribution</div>
-        </div>
-        <!-- ── END LOGO SECTION ──────────────────────────────────────── -->
-
-        <!-- Section divider label -->
-        <div class="divider">TERMINAL</div>
-
-        <!-- Live clock — updated every second by script.js -->
-        <div id="clock">Loading...</div>
-
-        <!-- ── SEARCH BAR ─────────────────────────────────────────────── -->
-        <div class="search-wrap">
-
-            <!-- Search form — submits query to Google by default -->
+        </div> <!-- ── END LOGO SECTION ──────────────────────────────────────── --> <!-- Section divider label -->
+        <div class="divider">TERMINAL</div> <!-- Live clock — updated every second by script.js -->
+        <div id="clock">Loading...</div> <!-- ── SEARCH BAR ─────────────────────────────────────────────── -->
+        <div class="search-wrap"> <!-- Search form — submits query to Google by default -->
             <form class="search-form" id="searchForm" action="https://www.google.com/search" method="GET">
-                <!-- Terminal-style prompt prefix (decorative, non-interactive) -->
-                <span class="search-prefix">root@arch ~#</span>
-
-                <!-- Text input field; autofocused on page load -->
-                <input type="text" id="searchInput" name="q" placeholder="Search" autocomplete="off" autofocus>
-
-                <!-- Submit button using the search symbol character -->
-                <button type="submit" title="Search">⌕</button>
-            </form>
-
-            <!-- Autocomplete / search suggestion dropdown — populated by script.js -->
+                <!-- Terminal-style prompt prefix (decorative, non-interactive) --> <span
+                    class="search-prefix">root@arch ~#</span> <!-- Text input field; autofocused on page load --> <input
+                    type="text" id="searchInput" name="q" placeholder="Search" autocomplete="off" autofocus>
+                <!-- Submit button using the search symbol character --> <button type="submit" title="Search">⌕</button>
+            </form> <!-- Autocomplete / search suggestion dropdown — populated by script.js -->
             <div id="suggestions"></div>
-        </div>
-        <!-- ── END SEARCH BAR ─────────────────────────────────────────── -->
-
+        </div> <!-- ── END SEARCH BAR ─────────────────────────────────────────── -->
         <!-- Quick-access links section label -->
         <div class="links-label">[ QUICK ACCESS ]</div>
-
         <!-- ── QUICK ACCESS LINKS ─────────────────────────────────────── -->
-        <div class="links">
-            <a href="https://blackarch.org/"> <span class="icon">🌐</span>Official Site</a>
-            <a href="https://blackarch.org/tools.html"> <span class="icon">🛠</span>All Tools</a>
-            <a href="https://www.exploit-db.com/"> <span class="icon">☠</span>Exploit-DB</a>
-            <a href="https://archlinux.org/"> <span class="icon">📖</span>Arch Linux</a>
-        </div>
-        <!-- ── END QUICK ACCESS LINKS ────────────────────────────────── -->
-
-        <!-- Page footer / branding strip -->
+        <div class="links"> <a href="https://blackarch.org/"> <span class="icon">🌐</span>Official Site</a> <a
+                href="https://blackarch.org/tools.html"> <span class="icon">🛠</span>All Tools</a> <a
+                href="https://www.exploit-db.com/"> <span class="icon">☠</span>Exploit-DB</a> <a
+                href="https://archlinux.org/"> <span class="icon">📖</span>Arch Linux</a> </div>
+        <!-- ── END QUICK ACCESS LINKS ────────────────────────────────── --> <!-- Page footer / branding strip -->
         <div class="footer">[ BLACKARCH LINUX — OFFENSIVE SECURITY ]</div>
-
-    </div>
-    <!-- ── END MAIN PANEL ─────────────────────────────────────────── -->
-
+    </div> <!-- ── END MAIN PANEL ─────────────────────────────────────────── -->
     <!-- Main JavaScript: handles Matrix animation, clock, typewriter effect, and search suggestions -->
     <script src="script.js"></script>
-
 </body>
 
 </html>

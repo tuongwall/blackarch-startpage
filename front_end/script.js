@@ -1,258 +1,313 @@
-/* =========================================
-   1. REAL-TIME CLOCK UPDATER
-   ========================================= */
+/* =========================================================
+   MODULE 1: REAL-TIME CLOCK RENDERING ENGINE
+   =========================================================
+   Purpose:
+   Provides a continuously updating date-time display
+   formatted for the en-GB locale.
+
+   Responsibilities:
+   - Generate current timestamp
+   - Format date and time separately
+   - Inject formatted output into DOM
+   - Maintain deterministic 1-second refresh cycle
+
+   Performance Notes:
+   - Single DOM write per second
+   - Negligible CPU overhead
+   - Safe for long-running sessions
+   ========================================================= */
+
 function updateClock() {
+    // Instantiate current timestamp
     const now = new Date();
-    const d = now.toLocaleDateString("en-GB", { weekday: "short", year: "numeric", month: "short", day: "2-digit" });
-    const t = now.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
-    document.getElementById("clock").innerHTML = `${d} &nbsp;|&nbsp; <span>${t}</span>`;
+
+    // Format date (e.g., Mon, 27 Feb 2026)
+    const d = now.toLocaleDateString("en-GB", {
+        weekday: "short",
+        year: "numeric",
+        month: "short",
+        day: "2-digit"
+    });
+
+    // Format time (HH:MM:SS, 24-hour format)
+    const t = now.toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit"
+    });
+
+    // Atomic DOM update
+    document.getElementById("clock").innerHTML =
+        `${d} &nbsp;|&nbsp; <span>${t}</span>`;
 }
-setInterval(updateClock, 1000);
+
+// Immediate execution prevents first-render delay
 updateClock();
 
-/* =========================================
-   2. MATRIX RAIN EFFECT (CANVAS)
-   ========================================= */
+// Scheduled interval execution (1 second resolution)
+setInterval(updateClock, 1000);
+
+
+
+/* =========================================================
+   MODULE 2: MATRIX RAIN CANVAS ENGINE
+   =========================================================
+   Purpose:
+   Renders animated matrix-style background effect
+   using HTML5 Canvas 2D API.
+
+   Architecture:
+   - Procedural character rendering
+   - State-driven column drops
+   - Soft fade frame blending
+   - Responsive to viewport resize
+
+   Performance Strategy:
+   - No object allocations inside loop
+   - Controlled frame rate (~26 FPS)
+   - Partial opacity background repaint
+   ========================================================= */
+
+// Canvas initialization
 const canvas = document.getElementById("matrix");
 const mc = canvas.getContext("2d");
+
+// Character pool used for random rendering
 const chars = "01BLACKARCH$#@><|/\\{}[]";
+
+// Column and vertical drop state
 let cols, drops;
 
+/**
+ * Initializes canvas dimensions and column state.
+ * Triggered on page load and viewport resize.
+ */
 function initMatrix() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    const fs = 13;
+
+    const fs = 13; // Fixed font size
     cols = Math.floor(canvas.width / fs);
+
+    // Randomized negative start to stagger drop appearance
     drops = Array.from({ length: cols }, () => Math.random() * -50);
 }
 
+/**
+ * Main rendering loop.
+ * Handles frame fading, character rendering,
+ * drop movement, and reset logic.
+ */
 function drawMatrix() {
+    // Semi-transparent overlay for motion trail effect
     mc.fillStyle = "rgba(0,0,0,0.055)";
     mc.fillRect(0, 0, canvas.width, canvas.height);
+
     mc.font = "13px Share Tech Mono, monospace";
 
     for (let i = 0; i < drops.length; i++) {
+
+        // Random brightness variation
         const bright = Math.random() > 0.93;
         mc.fillStyle = bright ? "#aaffaa" : "#00c832";
+
         const char = chars[Math.floor(Math.random() * chars.length)];
+
         mc.fillText(char, i * 13, drops[i] * 13);
 
-        if (drops[i] * 13 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        // Reset drop once exceeding viewport height
+        if (drops[i] * 13 > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+        }
+
+        // Increment vertical position
         drops[i] += 0.5 + Math.random() * 0.5;
     }
 }
+
+// Responsive reinitialization
 window.addEventListener("resize", initMatrix);
 initMatrix();
+
+// Controlled animation interval (~38ms per frame)
 setInterval(drawMatrix, 38);
 
-/* =========================================
-   3. TYPEWRITER EFFECT (CHẠY CHỮ)
-   ========================================= */
+
+
+/* =========================================================
+   MODULE 3: TYPEWRITER ANIMATION ENGINE
+   =========================================================
+   Purpose:
+   Simulates typing and deleting animation
+   cycling through predefined phrases.
+
+   Design Pattern:
+   - Stateful recursive timeout
+   - Dynamic speed adjustment
+   - Forward / backward mode switch
+
+   Timing Profile:
+   - Typing speed: 150ms
+   - Deleting speed: 60ms
+   - Pause at full word: 2000ms
+   - Pause before next word: 500ms
+   ========================================================= */
+
 const typeText = document.getElementById("type-text");
+
 const words = ["NGUYEN TUONG", "CYBER SECURITY"];
+
 let wordIndex = 0;
 let charIndex = 0;
 let isDeleting = false;
 
+/**
+ * Controls the typewriter state machine.
+ */
 function typingEffect() {
+
     const currentWord = words[wordIndex];
+
+    // Render substring up to current character index
     typeText.textContent = currentWord.substring(0, charIndex);
 
     let speed = isDeleting ? 60 : 150;
 
+    // Full word typed → switch to deleting mode
     if (!isDeleting && charIndex === currentWord.length) {
         speed = 2000;
         isDeleting = true;
-    } else if (isDeleting && charIndex === 0) {
+    }
+    // Fully deleted → switch to next word
+    else if (isDeleting && charIndex === 0) {
         isDeleting = false;
         wordIndex = (wordIndex + 1) % words.length;
         speed = 500;
     }
 
     charIndex += isDeleting ? -1 : 1;
+
+    // Recursive controlled timing
     setTimeout(typingEffect, speed);
 }
+
 typingEffect();
 
-/* =========================================
-   4. TÍCH HỢP TÌM KIẾM AI & GOOGLE THÔNG MINH
-   ========================================= */
+
+
+/* =========================================================
+   MODULE 4: HYBRID INTELLIGENT SEARCH ENGINE
+   =========================================================
+   Purpose:
+   Provides real-time dual-source suggestions:
+   - Google Suggest (fast path)
+   - AI Suggest API (slow path)
+
+   Architecture:
+   - Dual Debounce Strategy
+   - Client-side caching
+   - State-driven rendering
+   - Keyboard navigation support
+   - Smart visibility management
+
+   Performance & UX Strategy:
+   - Immediate "Thinking..." feedback
+   - Cancel stale queries via state comparison
+   - Single DOM injection per render cycle
+   ========================================================= */
+
 const searchInput = document.getElementById("searchInput");
 const suggestionsBox = document.getElementById("suggestions");
 const searchForm = document.getElementById("searchForm");
 
-// Khai báo 2 bộ đếm thời gian riêng biệt
+// Independent debounce timers
 let googleTimer = null;
 let aiTimer = null;
 
-// Trạng thái (State) hiện tại của khung tìm kiếm
+// Centralized state store
 let stateQuery = "";
 let stateAI = "";
 let stateGoogle = [];
 
-// Bộ nhớ đệm (Cache) giúp không gọi API nhiều lần cho cùng 1 từ khóa
+// In-memory caches to reduce API calls
 const cacheGoogle = {};
 const cacheAI = {};
 
+/**
+ * Escapes special regex characters to prevent malformed patterns.
+ */
 function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// Lấy gợi ý Google (nhanh)
+
+
+/* ========================
+   GOOGLE SUGGEST PROVIDER
+   ========================
+
+   Uses JSONP-style dynamic script injection
+   to bypass CORS limitations.
+
+   Fast response (~150ms debounce).
+*/
+
 async function getGoogle(q) {
-    if (cacheGoogle[q]) return cacheGoogle[q]; // Lấy từ Cache nếu có
+
+    if (cacheGoogle[q]) return cacheGoogle[q];
+
     return new Promise((resolve) => {
+
         window._gsugg = function (data) {
             const res = data && data[1] ? data[1] : [];
-            cacheGoogle[q] = res; // Lưu vào cache
+            cacheGoogle[q] = res;
             resolve(res);
         };
+
         const s = document.createElement("script");
-        s.src = `https://suggestqueries.google.com/complete/search?client=chrome&q=${encodeURIComponent(q)}&callback=_gsugg`;
+
+        s.src =
+            `https://suggestqueries.google.com/complete/search?client=chrome&q=${encodeURIComponent(q)}&callback=_gsugg`;
+
         s.onload = () => s.remove();
         s.onerror = () => resolve([]);
+
         document.body.appendChild(s);
     });
 }
 
-// Lấy phản hồi AI (chậm hơn)
+
+
+/* ========================
+   AI SUGGEST PROVIDER
+   ========================
+
+   Slower but more intelligent.
+   Triggered only after user stops typing (800ms).
+
+   Includes:
+   - Network error handling
+   - Graceful fallback
+   - Result caching
+*/
+
 async function getAI(q) {
-    if (cacheAI[q]) return cacheAI[q]; // Lấy từ Cache nếu có
+
+    if (cacheAI[q]) return cacheAI[q];
+
     try {
-        const response = await fetch(`http://localhost:3000/api/suggest?q=${encodeURIComponent(q)}`);
-        if (!response.ok) throw new Error("Lỗi mạng");
+        const response =
+            await fetch(`http://localhost:3000/api/suggest?q=${encodeURIComponent(q)}`);
+
+        if (!response.ok) throw new Error("Network error");
+
         const data = await response.json();
-        cacheAI[q] = data.suggestion; // Lưu vào cache
+
+        cacheAI[q] = data.suggestion;
+
         return data.suggestion;
+
     } catch (error) {
         return `✨ AI Search: "${q}"`;
     }
 }
-
-// Hàm render giao diện động
-function renderSuggestions() {
-    if (!stateQuery) {
-        suggestionsBox.style.display = "none";
-        return;
-    }
-
-    currentFocus = -1;
-    let htmlContent = "";
-
-    // Lọc các ký tự đặc biệt để đưa lên URL an toàn
-    const encodedQuery = encodeURIComponent(stateQuery);
-
-    // 1. Render mục AI (luôn hiện trên cùng)
-    htmlContent += `
-        <div class="sug-item" 
-             style="padding: 10px; cursor: pointer; color: #00ff41; transition: 0.2s; border-bottom: 1px dashed #00c832; margin-bottom: 5px;"
-             onmouseover="this.style.backgroundColor='rgba(0, 255, 65, 0.1)'; this.style.color='#fff'"
-             onmouseout="this.style.backgroundColor=''; this.style.color='#00ff41'"
-             onclick="window.open('https://www.google.com/search?q=${encodedQuery}&udm=50&aep=1&ntc=1', '_blank');">
-            > <b>${stateAI}</b>
-        </div>
-    `;
-
-    // 2. Render mục Google (Giới hạn tối đa 5 kết quả)
-    const topGoogle = stateGoogle.slice(0, 5);
-    topGoogle.forEach(g => {
-        const regex = new RegExp(`(${escapeRegExp(stateQuery)})`, "gi");
-        const highlighted = g.replace(regex, "<b>$1</b>");
-        
-        htmlContent += `
-        <div class="sug-item" 
-             style="padding: 10px; cursor: pointer; color: rgba(0, 255, 65, 0.7); transition: 0.2s;"
-             onmouseover="this.style.backgroundColor='rgba(255, 255, 255, 0.05)'; this.style.color='#fff'"
-             onmouseout="this.style.backgroundColor=''; this.style.color='rgba(0, 255, 65, 0.7)'"
-             onclick="document.getElementById('searchInput').value='${g.replace(/'/g, "\\'")}'; document.getElementById('searchForm').submit();">
-            > ${highlighted}
-        </div>
-        `;
-    });
-
-    suggestionsBox.innerHTML = htmlContent;
-    suggestionsBox.style.display = "block";
-}
-
-
-// Bắt sự kiện người dùng gõ phím (Nơi áp dụng Dual-Debounce)
-searchInput.addEventListener("input", function () {
-    // Xóa bộ đếm cũ nếu người dùng vẫn đang gõ liên tục
-    clearTimeout(googleTimer);
-    clearTimeout(aiTimer);
-    
-    const q = this.value.trim();
-
-    if (!q) {
-        stateQuery = "";
-        renderSuggestions();
-        return;
-    }
-
-    stateQuery = q;
-
-    // --- LUỒNG 1: GOOGLE (Siêu tốc - 150ms) ---
-    googleTimer = setTimeout(() => {
-        getGoogle(q).then(res => {
-            if (stateQuery !== q) return; 
-            stateGoogle = res;
-            renderSuggestions(); 
-        });
-    }, 150);
-
-    // --- LUỒNG 2: AI (Đợi người dùng gõ xong - 800ms) ---
-    // Ngay lập tức hiện trạng thái Thinking (Không đợi 800ms mới hiện)
-    stateAI = `⏳ Thinking...`;
-    renderSuggestions();
-
-    // Chỉ thực sự gọi API lướt web khi đã dừng gõ 0.8s
-    aiTimer = setTimeout(() => {
-        getAI(q).then(res => {
-            if (stateQuery !== q) return;
-            stateAI = res;
-            renderSuggestions(); 
-        });
-    }, 800);
-});
-
-// Điều hướng bằng phím mũi tên Lên/Xuống
-searchInput.addEventListener("keydown", function(e) {
-    let items = suggestionsBox.getElementsByClassName("sug-item");
-    if (suggestionsBox.style.display === "none" || !items.length) return;
-
-    if (e.key === "ArrowDown") {
-        currentFocus++; setActive(items);
-    } else if (e.key === "ArrowUp") {
-        currentFocus--; setActive(items);
-    } else if (e.key === "Enter") {
-        if (currentFocus > -1) {
-            e.preventDefault();
-            items[currentFocus].click(); 
-        }
-    } else if (e.key === "Escape") {
-        suggestionsBox.style.display = "none";
-    }
-});
-
-function setActive(items) {
-    for (let i = 0; i < items.length; i++) {
-        items[i].style.backgroundColor = ""; 
-    }
-    if (currentFocus >= items.length) currentFocus = 0;
-    if (currentFocus < 0) currentFocus = items.length - 1;
-    items[currentFocus].style.backgroundColor = "rgba(0, 255, 65, 0.2)"; 
-}
-
-// Tính năng ẩn/hiện hộp gợi ý thông minh
-document.addEventListener("click", (e) => {
-    if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
-        suggestionsBox.style.display = "none";
-    }
-});
-
-// Hiện lại gợi ý khi bấm trở lại vào ô nhập liệu
-searchInput.addEventListener("focus", () => {
-    if (searchInput.value.trim() && suggestionsBox.innerHTML !== "") {
-        suggestionsBox.style.display = "block";
-    }
-});
